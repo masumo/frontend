@@ -18,12 +18,37 @@ export function Voting() {
    const provider = new ethers.providers.EtherscanProvider("maticmum", ETHERSCAN_API_KEY);
    const ballotContract = new Contract(BALLOT_CONTRACT, ballotJson.abi, provider);
 
+   async function handleSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    let proposalIdx = formData.get('selectedProposal');
+    let voteAmount = formData.get('amount');
+
+    await vote(signer, ballotContract, setLoading, setError, setTxData, parseInt(proposalIdx), voteAmount);
+    
+    
+    //console.log(formData.get('selectedProposal')+"  "+formData.get("amount"));
+  }
+
     return (
         <div>
           <h1>Voting</h1>
-          <button onClick={async () => await vote(signer, ballotContract, setLoading, setError, setTxData)}>
-            Vote
-          </button>
+           
+          <form method="post" onSubmit={handleSubmit}>
+              Vote: &nbsp;
+              <select name="selectedProposal">
+                <option value="0">Chcocolate</option>
+                <option value="1">Strawberry</option>
+                <option value="2">Vanilla</option>
+              </select>
+              <label>
+              &nbsp;  Amount: &nbsp; 
+              </label>
+              <input name="amount" /> &nbsp; 
+              <button type="submit">Vote</button>
+          </form>
+          
         { 
           loading? <p>Voting in Progress...</p> : <p></p>
         }      
@@ -31,17 +56,17 @@ export function Voting() {
           errorReason? <p>Voting Failed: {errorReason}</p> : <p></p>
         }
         { 
-          txData? <p>Voted {txData.hash}</p> : <p></p>
+          txData? <p>Voted at:  <a href={"https://mumbai.polygonscan.com/tx/" + txData.hash} target="_blank">{txData.hash}</a> </p> : <p></p>
         }    
         </div>
     )  
     
   }
 
-
- async function vote(signer, ballotContract, setLoading, setError, setTxData){
+  
+ async function vote(signer, ballotContract, setLoading, setError, setTxData, propIdx, amount){
    setLoading(true);
-   ballotContract.connect(signer).vote(1, ethers.utils.parseUnits("3"))
+   ballotContract.connect(signer).vote(propIdx, ethers.utils.parseUnits(amount))
        .then((data) => {
          setTxData(data);
          setLoading(false);

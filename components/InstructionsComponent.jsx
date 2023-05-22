@@ -3,7 +3,11 @@ import Router, { useRouter } from "next/router";
 import { useState, useEffect } from 'react';
 import { useSigner, useNetwork, useBalance } from 'wagmi';
 import { useContractWrite, useContract } from 'wagmi'
-import { Ballot } from "./Ballot";
+
+import { VotingPower } from "./VotingPower";
+import { WinningProposal } from "./WinningProposal";
+import { Voting } from "./Voting";
+import { Delegate } from "./Delegate";
 
 export default function InstructionsComponent() {
 	const router = useRouter();
@@ -39,8 +43,12 @@ export default function InstructionsComponent() {
 function PageBody(){
 	return(
 		<div>
-			<RequestTokens/>
-			<Ballot></Ballot>
+			<RequestTokens/><br />
+			<div><Delegate/></div><br />
+			<div><VotingPower></VotingPower></div> <br />
+			<div><Voting/></div> <br />
+			<div><WinningProposal></WinningProposal></div> <br />
+			<br />
 		</div>
 	)
 }
